@@ -1,0 +1,6 @@
+# Robots.txt for SHRINOVATECH
+User-agent: *
+Allow: /
+
+# Sitemap Index
+Sitemap: https://shrinovatech.com/sitemap.xml
