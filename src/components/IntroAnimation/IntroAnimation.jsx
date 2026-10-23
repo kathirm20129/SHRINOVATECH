@@ -105,6 +105,7 @@ export default function IntroAnimation({ onComplete }) {
   };
 
   useEffect(() => {
+    const isReducedMotion = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const base = (import.meta.env.BASE_URL || '/').replace(/\/$/, '');
     const rawPath = typeof window !== 'undefined' ? window.location.pathname : '';
     const activePath = base && rawPath.startsWith(base) ? (rawPath.slice(base.length) || '/') : rawPath;
