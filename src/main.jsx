@@ -50,7 +50,7 @@ class RootErrorBoundary extends Component {
             {this.state.error?.stack || String(this.state.error)}
           </pre>
           <button
-            onClick={() => { window.location.href = '/'; }}
+            onClick={() => { window.location.href = import.meta.env.BASE_URL || '/'; }}
             style={{ marginTop: '20px', padding: '10px 20px', background: '#0062ff', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}
           >
             Go Back Home

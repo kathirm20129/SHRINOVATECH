@@ -105,9 +105,10 @@ export default function IntroAnimation({ onComplete }) {
   };
 
   useEffect(() => {
-    // Fast path: if reduced motion, subpage direct load, or already seen this session
-    const isReducedMotion = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const isDirectSubpage = typeof window !== 'undefined' && window.location.pathname !== '/' && window.location.pathname !== '';
+    const base = (import.meta.env.BASE_URL || '/').replace(/\/$/, '');
+    const rawPath = typeof window !== 'undefined' ? window.location.pathname : '';
+    const activePath = base && rawPath.startsWith(base) ? (rawPath.slice(base.length) || '/') : rawPath;
+    const isDirectSubpage = activePath !== '/' && activePath !== '';
     const hasSeenIntro = (() => {
       try {
         return typeof window !== 'undefined' && sessionStorage.getItem('shrinovatech_intro_seen') === 'true';

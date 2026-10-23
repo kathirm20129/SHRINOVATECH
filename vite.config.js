@@ -7,6 +7,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: process.env.VITE_BASE_PATH || (process.env.NODE_ENV === 'production' ? '/SHRINOVATECH/' : '/'),
   plugins: [react()],
   resolve: {
     alias: {

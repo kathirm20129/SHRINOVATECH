@@ -13,9 +13,25 @@ import {
   ProjectsPage 
 } from './pages';
 
+const BASE_URL = (import.meta.env.BASE_URL || '/').replace(/\/$/, '');
+
+export const normalizePath = (pathname) => {
+  if (!pathname) return '/';
+  if (BASE_URL && pathname.startsWith(BASE_URL)) {
+    const stripped = pathname.slice(BASE_URL.length);
+    return stripped ? (stripped.startsWith('/') ? stripped : '/' + stripped) : '/';
+  }
+  return pathname;
+};
+
+export const toFullPath = (route) => {
+  const cleanRoute = !route ? '/' : (route.startsWith('/') ? route : '/' + route);
+  return `${BASE_URL}${cleanRoute}`;
+};
+
 export default function App() {
   const [currentPath, setCurrentPath] = useState(() => {
-    return (typeof window !== 'undefined' && window.location.pathname) || '/';
+    return (typeof window !== 'undefined' && normalizePath(window.location.pathname)) || '/';
   });
 
   const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
@@ -23,7 +39,8 @@ export default function App() {
   // Fast reveal: immediately true on subpages or if intro was already seen in this session
   const [isPageRevealed, setIsPageRevealed] = useState(() => {
     if (typeof window === 'undefined') return true;
-    const isSubpage = window.location.pathname !== '/' && window.location.pathname !== '';
+    const activeRoute = normalizePath(window.location.pathname);
+    const isSubpage = activeRoute !== '/' && activeRoute !== '';
     const hasSeenIntro = (() => {
       try {
         return sessionStorage.getItem('shrinovatech_intro_seen') === 'true';
@@ -61,7 +78,7 @@ export default function App() {
   // Sync state with browser back/forward buttons
   useEffect(() => {
     const handlePopState = () => {
-      setCurrentPath((typeof window !== 'undefined' && window.location.pathname) || '/');
+      setCurrentPath((typeof window !== 'undefined' && normalizePath(window.location.pathname)) || '/');
     };
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
@@ -69,9 +86,10 @@ export default function App() {
 
   // Custom navigate function that updates history and state smoothly
   const navigate = (to) => {
-    if (to !== currentPath) {
-      window.history.pushState({}, '', to);
-      setCurrentPath(to);
+    const internalRoute = normalizePath(to);
+    if (internalRoute !== currentPath) {
+      window.history.pushState({}, '', toFullPath(internalRoute));
+      setCurrentPath(internalRoute);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
