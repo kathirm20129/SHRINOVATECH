@@ -97,10 +97,10 @@ export default function IntroAnimation({ onComplete }) {
   const dismissIntro = () => {
     if (hasCompletedRef.current) return;
     hasCompletedRef.current = true;
-    try {
-      sessionStorage.setItem('shrinovatech_intro_seen', 'true');
-    } catch (e) {}
     setHidden(true);
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('intro-reveal'));
+    }
     if (onCompleteRef.current) onCompleteRef.current();
   };
 
@@ -110,15 +110,8 @@ export default function IntroAnimation({ onComplete }) {
     const rawPath = typeof window !== 'undefined' ? window.location.pathname : '';
     const activePath = base && rawPath.startsWith(base) ? (rawPath.slice(base.length) || '/') : rawPath;
     const isDirectSubpage = activePath !== '/' && activePath !== '';
-    const hasSeenIntro = (() => {
-      try {
-        return typeof window !== 'undefined' && sessionStorage.getItem('shrinovatech_intro_seen') === 'true';
-      } catch (e) {
-        return false;
-      }
-    })();
 
-    if (isReducedMotion || isDirectSubpage || hasSeenIntro) {
+    if (isReducedMotion || isDirectSubpage) {
       dismissIntro();
       return;
     }

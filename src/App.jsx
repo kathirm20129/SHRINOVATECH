@@ -36,29 +36,22 @@ export default function App() {
 
   const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
   
-  // Fast reveal: immediately true on subpages or if intro was already seen in this session
+  // Fast reveal: immediately true on subpages
   const [isPageRevealed, setIsPageRevealed] = useState(() => {
     if (typeof window === 'undefined') return true;
     const activeRoute = normalizePath(window.location.pathname);
     const isSubpage = activeRoute !== '/' && activeRoute !== '';
-    const hasSeenIntro = (() => {
-      try {
-        return sessionStorage.getItem('shrinovatech_intro_seen') === 'true';
-      } catch (e) {
-        return false;
-      }
-    })();
-    return isSubpage || hasSeenIntro;
+    return isSubpage;
   });
 
   useEffect(() => {
     const handleReveal = () => setIsPageRevealed(true);
     window.addEventListener('intro-reveal', handleReveal);
     
-    // Safety auto-reveal fallback
+    // Safety auto-reveal fallback (only if intro times out)
     const safetyTimer = setTimeout(() => {
       setIsPageRevealed(true);
-    }, 4000);
+    }, 8000);
 
     return () => {
       window.removeEventListener('intro-reveal', handleReveal);
